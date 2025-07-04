@@ -113,10 +113,10 @@ class Cart {
         List<ShippableItem> list = new ArrayList<>();
         for (CartItem item : items) {
             if (item.product instanceof Shippable) {
-                for (int i = 0; i < item.quantity; i++) {
+
                     Shippable p = (Shippable) item.product;
-                    list.add(new ShippableItem(p.getName(), p.getWeight()));
-                }
+                    list.add(new ShippableItem(p.getName(), p.getWeight(),item.quantity));
+
             }
         }
         return list;
@@ -236,9 +236,12 @@ class Customer{
 class ShippableItem {
     String name;
     double weight;
+    int quantity;
 
-    public ShippableItem(String name, double weight) {
-        this.name = name; this.weight = weight;
+    public ShippableItem(String name, double weight,int quantity) {
+        this.name = name;
+        this.weight = weight;
+        this.quantity=quantity;
     }
 }
 
@@ -248,16 +251,13 @@ class ShippingService {
     public static void ship(List<ShippableItem> items) {
         System.out.println("** Shipment notice **");
 
-        Map<String, Integer> itemCounts = new HashMap<>();
+
         double totalWeight = 0;
 
         for (ShippableItem item : items) {
-            itemCounts.put(item.name, itemCounts.getOrDefault(item.name, 0) + 1);
-            totalWeight += item.weight;
-        }
 
-        for (Map.Entry<String, Integer> entry : itemCounts.entrySet()) {
-            System.out.println(entry.getValue() + "x " + entry.getKey());
+            System.out.println(item.quantity + "x " + item.name+" "+item.weight+"kg");
+            totalWeight += (item.weight*item.quantity);
         }
 
         System.out.printf("Total package weight %.1fkg%n", totalWeight);
@@ -278,7 +278,7 @@ public class Main {
 
         Product cheese = new ExpirableShippableProduct("Cheese ", 100, 10, LocalDate.now().plusDays(3), 0.4);
         Product biscuits = new ExpirableShippableProduct("Biscuits ", 150, 5, LocalDate.now().plusDays(2), 0.7);
-        Product tv = new ShippableProduct("tv", 50, 20,2) ; 
+        Product tv = new ShippableProduct("tv", 50, 20,2) ;
 
         customer.addToCart(cheese, 2);
         customer.addToCart(biscuits, 1);
